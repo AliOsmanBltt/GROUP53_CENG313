@@ -7,7 +7,7 @@ CENG313 Data Science term project, based on the Kaggle competition
 
 | Name | Student ID | GitHub |
 |---|---|---|
-| Ali Osman Bulut | `<STUDENT_ID>` | [@AliOsmanBltt](https://github.com/AliOsmanBltt) |
+| Ali Osman Bulut | 23118080037 | [@AliOsmanBltt](https://github.com/AliOsmanBltt) |
 
 Group 53 · 1 member
 
