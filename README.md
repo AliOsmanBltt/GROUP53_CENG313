@@ -89,9 +89,17 @@ holidays, discounts, availability, categories, evaluation weights and the train/
 
 ## Results
 
+Validation on the last 14 days of train (2024-05-20 → 2024-06-02):
+
 | Model | Validation WMAE | Kaggle public | Kaggle private |
 |---|---|---|---|
-| *to be filled after running* | | | |
+| Random forest | **25.67** | | |
+| Ridge regression | 28.64 | | |
+| Weekday mean (8w) | 29.09 | | |
+| Moving average (28d) | 30.79 | | |
+| Moving average (7d) | 32.86 | | |
+| Seasonal naive | 36.08 | | |
+| Naive (last value) | 42.52 | | |
 
 ## Kaggle submission history
 
@@ -104,3 +112,4 @@ holidays, discounts, availability, categories, evaluation weights and the train/
 | Date | Work done |
 |---|---|
 | 2026-10-21 | Repository created. Data pipeline (`src/data.py`), baseline models (`src/models.py`), metric and helpers (`src/utils.py`) and the Assignment 1 notebook added. |
+| 2026-10-21 | Notebook run on the real data. Ridge stabilised by log-transforming skewed features. EDA summary and baseline results added. |
