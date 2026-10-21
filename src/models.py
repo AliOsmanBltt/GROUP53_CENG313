@@ -128,6 +128,9 @@ BASE_FEATURES = (
     ["total_orders", "sell_price_main", "max_discount"] + DISCOUNT_COLS + CALENDAR_FLAGS
     + ["month", "day", "dayofweek", "dayofyear", "weekofyear", "is_weekend"]
 )
+# heavily right-skewed columns are log-transformed so that linear models stay stable
+LOG_FEATURES = ["item_mean", "item_median", "item_std", "item_dow_mean",
+                "total_orders", "sell_price_main"]
 
 
 class TabularFeatures:
@@ -168,7 +171,11 @@ class TabularFeatures:
                 X[col] = df[col].to_numpy()
         for col, mapping in self.cat_maps_.items():
             X[col + "_code"] = df[col].astype(str).map(mapping).fillna(-1).to_numpy()
-        return X.fillna(0).astype("float32")
+        X = X.fillna(0)
+        for col in LOG_FEATURES:
+            if col in X.columns:
+                X[col] = np.log1p(X[col].clip(lower=0))
+        return X.astype("float32")
 
 
 class SklearnForecaster(BaseForecaster):
@@ -206,10 +213,13 @@ class SklearnForecaster(BaseForecaster):
             fit_kwargs[key] = sample_weight
         self.estimator.fit(X, y, **fit_kwargs)
         self.feature_names_ = list(X.columns)
+        self.max_target_ = float(y.max())
         return self
 
     def predict(self, df):
         pred = self.estimator.predict(self.features_.transform(df))
+        # never predict beyond the largest value seen in training
+        pred = np.clip(pred, 0 if self.log_target else None, self.max_target_)
         if self.log_target:
             pred = np.expm1(pred)
         return np.clip(pred, 0, None)
