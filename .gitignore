@@ -1,0 +1,15 @@
+# competition data (downloaded with the Kaggle API)
+data/
+*.zip
+kaggle.json
+
+# generated files
+submissions/*.csv
+
+# python / jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.DS_Store
