@@ -26,7 +26,7 @@ class BaseForecaster:
 
     def _lookup(self, df, table, keys):
         out = df[keys].merge(table, on=keys, how="left")["pred"]
-        return out.fillna(self.global_value_).to_numpy()
+        return out.fillna(self.global_value_).to_numpy(dtype=float, copy=True)
 
     def __repr__(self):
         return self.name
@@ -67,7 +67,7 @@ class SeasonalNaive(BaseForecaster):
     def predict(self, df):
         d = df.assign(dayofweek=df["date"].dt.dayofweek)
         out = d[["unique_id", "dayofweek"]].merge(self.table_, on=["unique_id", "dayofweek"],
-                                                   how="left")["pred"].to_numpy()
+                                                   how="left")["pred"].to_numpy(dtype=float, copy=True)
         missing = np.isnan(out)
         out[missing] = self.fallback_.predict(df[missing])
         return out
@@ -114,7 +114,7 @@ class DayOfWeekMean(BaseForecaster):
     def predict(self, df):
         d = df.assign(dayofweek=df["date"].dt.dayofweek)
         out = d[["unique_id", "dayofweek"]].merge(self.table_, on=["unique_id", "dayofweek"],
-                                                   how="left")["pred"].to_numpy()
+                                                   how="left")["pred"].to_numpy(dtype=float, copy=True)
         missing = np.isnan(out)
         out[missing] = self.fallback_.predict(df[missing])
         return out
@@ -128,6 +128,18 @@ BASE_FEATURES = (
     ["total_orders", "sell_price_main", "max_discount"] + DISCOUNT_COLS + CALENDAR_FLAGS
     + ["month", "day", "dayofweek", "dayofyear", "weekofyear", "is_weekend"]
 )
+# Columns removed for the linear model. Tree models cope with redundant and
+# label-encoded columns, but for Ridge they make X^T X ill-conditioned:
+#   - month / dayofyear / weekofyear / day all encode the same yearly position
+#   - is_weekend is a function of dayofweek, item_median ~ item_mean
+#   - the individual discount types are almost always 0 (type_3 is active in
+#     0.0005% of rows), so after standard scaling the rare non-zero values become
+#     thousands of standard deviations large; max_discount keeps the information
+#   - label-encoded categories have no linear meaning
+RIDGE_EXCLUDE = (["dayofyear", "weekofyear", "day", "is_weekend", "item_median"]
+                 + DISCOUNT_COLS
+                 + [c + "_code" for c in ["warehouse"] + CATEGORY_COLS])
+
 # heavily right-skewed columns are log-transformed so that linear models stay stable
 LOG_FEATURES = ["item_mean", "item_median", "item_std", "item_dow_mean",
                 "total_orders", "sell_price_main"]
@@ -186,11 +198,16 @@ class SklearnForecaster(BaseForecaster):
     Evaluation weights are used as sample weights when available.
     """
 
-    def __init__(self, estimator, name, recent_days=365, log_target=True):
+    def __init__(self, estimator, name, recent_days=365, log_target=True, exclude=None):
         self.estimator = estimator
         self.name = name
         self.recent_days = recent_days
         self.log_target = log_target
+        self.exclude = list(exclude or [])
+
+    def _features(self, df):
+        X = self.features_.transform(df)
+        return X.drop(columns=[c for c in self.exclude if c in X.columns])
 
     def fit(self, train):
         super().fit(train)
@@ -201,7 +218,7 @@ class SklearnForecaster(BaseForecaster):
             fit_df = train
         # item statistics come from the full history, the regressor from the recent window
         self.features_ = TabularFeatures().fit(train)
-        X = self.features_.transform(fit_df)
+        X = self._features(fit_df)
         y = fit_df["sales"].to_numpy()
         if self.log_target:
             y = np.log1p(y)
@@ -217,7 +234,7 @@ class SklearnForecaster(BaseForecaster):
         return self
 
     def predict(self, df):
-        pred = self.estimator.predict(self.features_.transform(df))
+        pred = self.estimator.predict(self._features(df))
         # never predict beyond the largest value seen in training
         pred = np.clip(pred, 0 if self.log_target else None, self.max_target_)
         if self.log_target:
@@ -225,8 +242,9 @@ class SklearnForecaster(BaseForecaster):
         return np.clip(pred, 0, None)
 
 
-def ridge_baseline(alpha=1.0, **kwargs):
+def ridge_baseline(alpha=10.0, **kwargs):
     model = make_pipeline(StandardScaler(), Ridge(alpha=alpha))
+    kwargs.setdefault("exclude", RIDGE_EXCLUDE)
     return SklearnForecaster(model, name="Ridge regression", **kwargs)
 
 
