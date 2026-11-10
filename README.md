@@ -109,6 +109,11 @@ higher WMAE than in the first run (28.64) because its feature set was reduced to
 ill-conditioned matrix; in exchange it trains without numerical warnings and its RMSE dropped
 from 168.9 to 150.9.
 
+### Additional EDA and error analysis / Ek EDA ve hata analizi
+
+- **Weekly pattern by category:** all categories peak on Friday, but Meat and fish changes the most (1.18 on Friday → 0.87 on Sunday), while Bakery stays near its average on Saturday (0.99). (**Kategoriye göre haftalık örüntü:** tüm kateegoriler Cuma zirve yapıyor; en çok değişen Meat and fish (Cuma 1.18 → Pazar 0.87), Bakery ise Cumartesi ortalamasına yakın kalıyor (0.99).)
+- **Error analysis of the random forest:** Fruit and vegetable is the hardest category (WMAE ≈ 37) and gives about 68% of the total weighted error. (**Randomm forest hata analizi:** en zor kategori Fruit and vegetable (WMAE ≈ 37) ve toplam ağırlıklı hatanınn yaklaşık %68'i buradan geliyor.)
+
 ## Kaggle submission history
 
 | Date | File | Model | Validation WMAE | Public | Private |
@@ -131,5 +136,8 @@ Claude was used to help with the initial repository setup and code scaffolding (
 | 2026-10-21 | Repository created. Data pipeline (`src/data.py`), baseline models (`src/models.py`), metric and helpers (`src/utils.py`) and the Assignment 1 notebook added. |
 | 2026-10-21 | Notebook run on the real data. Ridge stabilised by log-transforming skewed features. EDA summary and baseline results added. |
 | 2026-11-04 | Ridge baseline reworked: redundant and near-constant columns removed (ill-conditioned matrix warning). Pandas 3 compatibility fix in the naive baselines. Submission cells for the top 3 baselines added. |
+| 2026-11-07 | Weekday profile per product category added to the EDA. / EDA'ya kategori bazında haftalık satış profili eklendi. |
+| 2026-11-09 | Error analysis of the random forest by product category added. / Random forest için kategori bazında hata analizi eklendi. |
+| 2026-11-10 | README updated with the new EDA and error analysis findings. / README yeni EDA ve hata analizi bulgularıyla güncellendi. |
 | 2026-11-04 | Notebook re-run on Google Colab. Top 3 baselines (random forest, weekday mean, Ridge) submitted to Kaggle as late submissions and scores recorded. |
 | 2026-11-06 | AI usage note added to the README.
