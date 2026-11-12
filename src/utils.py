@@ -80,9 +80,11 @@ def plot_item_series(train, unique_id, ax=None, valid=None, preds=None):
     if valid is not None:
         mask = (valid["unique_id"] == unique_id).to_numpy()
         v = valid[mask]
+        order = np.argsort(v["date"].to_numpy())  # rows are not sorted by date
+        v = v.iloc[order]
         ax.plot(v["date"], v["sales"], lw=1.2, label="actual (valid)")
         for name, p in (preds or {}).items():
-            ax.plot(v["date"], np.asarray(p)[mask], lw=1, ls="--", label=name)
+            ax.plot(v["date"], np.asarray(p)[mask][order], lw=1, ls="--", label=name)
     ax.set_title(f"unique_id = {unique_id}")
     ax.legend(fontsize=8)
     return ax
