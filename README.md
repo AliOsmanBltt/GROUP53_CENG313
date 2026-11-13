@@ -1,6 +1,6 @@
-# GROUP53_CENG313 — Rohlik Sales Forecasting
+# GROUP52_CENG313 — Rohlik Sales Forecasting
 
-[![Open Assignment 1 In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AliOsmanBltt/GROUP53_CENG313/blob/main/assignment1_eda_baseline.ipynb)
+[![Open Assignment 1 In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ceng313-2026/GROUP52_CENG313/blob/main/assignment1_eda_baseline.ipynb)
 
 CENG313 Data Science term project, based on the Kaggle competition
 [**Rohlik Sales Forecasting Challenge v2**](https://www.kaggle.com/competitions/rohlik-sales-forecasting-challenge-v2).
@@ -11,7 +11,7 @@ CENG313 Data Science term project, based on the Kaggle competition
 |---|---|---|
 | Ali Osman Bulut | 23118080037 | [@AliOsmanBltt](https://github.com/AliOsmanBltt) |
 
-Group 53 · 1 member
+Group 52 · 1 member
 
 ## Competition
 
@@ -38,7 +38,7 @@ The data is not stored in the repository. The notebooks download it with the Kag
 ## Repository structure
 
 ```
-GROUP53_CENG313/
+GROUP52_CENG313/
 ├── README.md
 ├── requirements.txt
 ├── assignment1_eda_baseline.ipynb   # Assignment 1: EDA and baselines
@@ -62,8 +62,8 @@ GROUP53_CENG313/
 
 ### Local
 ```bash
-git clone https://github.com/AliOsmanBltt/GROUP53_CENG313.git
-cd GROUP53_CENG313
+git clone https://github.com/ceng313-2026/GROUP52_CENG313.git
+cd GROUP52_CENG313
 pip install -r requirements.txt
 # put kaggle.json in ~/.kaggle/, then:
 jupyter notebook assignment1_eda_baseline.ipynb
@@ -143,3 +143,4 @@ Claude was used to help with the initial repository setup and code scaffolding (
 | 2026-11-09 | Error analysis of the random forest by product category added. / Random forest için kategori bazında hata analizi eklendi. |
 | 2026-11-10 | README updated with the new EDA and error analysis findings. / README yeni EDA ve hata analizi bulgularıyla güncellendi. |
 | 2026-11-13 | Written interpretation added under every plot, a Preprocessing section added, prediction plot fixed, Kaggle score screenshot added, repository moved to the ceng313-2026 organization. / Her grafiğin altına yorum, Preprocessing bölümü ve Kaggle ekran görüntüsü eklendi; tahmin grafiği düzeltildi; repo ceng313-2026 organizasyonuna taşındı. |
+| 2026-11-13 | Repository renamed to GROUP52_CENG313 (correct group ID) and moved to the ceng313-2026 organization; section map added to the notebook. / Repo doğru grup numarasıyla GROUP52_CENG313 olarak adlandırıldı ve ceng313-2026 organizasyonuna taşındı; notebook'a bölüm eşleştirme tablosu eklendi. |
